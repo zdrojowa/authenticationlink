@@ -20,7 +20,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Zdrojowa\\Authenticationlink\\AuthenticationLinkServiceProvider"
+                "Zdrojowa\\Authenticationlink\\Providers\\AuthenticationLinkServiceProvider"
             ]
         }
     }
