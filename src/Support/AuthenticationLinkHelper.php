@@ -1,8 +1,8 @@
 <?php
 
-namespace Zdrojowa\Authenticationlink\Support;
+namespace Zdrojowa\AuthenticationLink\Support;
 
-use Zdrojowa\Authenticationlink\Models\AuthenticationLink;
+use Zdrojowa\AuthenticationLink\Models\AuthenticationLink;
 use Illuminate\Support\Str;
 
 /**

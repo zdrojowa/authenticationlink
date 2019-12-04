@@ -1,9 +1,9 @@
 <?php
 
-namespace Zdrojowa\Authenticationlink;
+namespace Zdrojowa\AuthenticationLink;
 
-use Zdrojowa\Authenticationlink\Contracts\AuthenticationLinkContract;
-use Zdrojowa\Authenticationlink\Models\AuthenticationLink as AuthenticationLinkModel;
+use Zdrojowa\AuthenticationLink\Contracts\AuthenticationLinkContract;
+use Zdrojowa\AuthenticationLink\Models\AuthenticationLink as AuthenticationLinkModel;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Container\BindingResolutionException;
