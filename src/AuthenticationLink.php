@@ -2,9 +2,13 @@
 
 namespace Zdrojowa\AuthenticationLink;
 
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Zdrojowa\AuthenticationLink\Contracts\AuthenticationLinkContract;
+use Zdrojowa\AuthenticationLink\Exceptions\TokenBadSystemCodeException;
+use Zdrojowa\AuthenticationLink\Exceptions\TokenExpiredException;
+use Zdrojowa\AuthenticationLink\Exceptions\TokenNotFoundException;
 use Zdrojowa\AuthenticationLink\Models\AuthenticationLink as AuthenticationLinkModel;
-use App\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
@@ -27,11 +31,24 @@ class AuthenticationLink implements AuthenticationLinkContract
      */
     private ?Model $systemModel;
 
+    private string $systemCode;
+    private bool $migrations;
+    private int $lifetime;
+    private string $failedRedirectLink;
+    private string $successRedirectLink;
+    private string $connectionName;
+
     /**
      * AuthenticationLink constructor.
      */
     public function __construct()
     {
+        $this->systemCode = Config::get('authentication-link.system_code');
+        $this->successRedirectLink = Config::get('authentication-link.success_redirect_link');
+        $this->failedRedirectLink = Config::get('authentication-link.failed_redirect_link');
+        $this->migrations = Config::get('authentication-link.migrations');
+        $this->lifetime = Config::get('authentication-link.token.lifetime');
+        $this->connectionName = Config::get('authentication-link.database_connection');
         try {
             $this->userModel = app()->make(Config::get('authentication-link.user_model'));
         } catch (BindingResolutionException $e) {
@@ -52,19 +69,19 @@ class AuthenticationLink implements AuthenticationLinkContract
      *
      * @return string
      */
-    public function create(int $user, int $systemId, int $lifeTime = null): string
+    public function create(int $user, int $systemId, int $lifeTime = null): ?string
     {
-        if ($this->systemModel && $this->userModel && User::where('id', $user)->exists() && $this->systemModel instanceof Model) {
+        if ($this->systemModel && $this->userModel && $this->userModel->query()->where('id', $user)->exists() && $this->systemModel instanceof Model) {
             $system = $this->systemModel->findOrFail($systemId);
 
             return AuthenticationLinkModel::create([
                 'user_id' => $user,
                 'system_id' => $systemId,
-                'expired_at' => Carbon::now()->addMinutes($lifeTime ?? Config::get('authentication-link.token.lifetime')),
+                'expired_at' => Carbon::now()->addSeconds($lifeTime ?? Config::get('authentication-link.token.lifetime')),
             ])->token;
         }
 
-        return '';
+        return null;
     }
 
     /**
@@ -99,5 +116,58 @@ class AuthenticationLink implements AuthenticationLinkContract
     public function getSystemModel(): ?Model
     {
         return $this->systemModel;
+    }
+
+    /**
+     * @param string $token
+     *
+     * @return bool
+     * @throws TokenBadSystemCodeException
+     * @throws TokenExpiredException
+     * @throws TokenNotFoundException
+     */
+    public function login(string $token): bool
+    {
+        $tokenModel = AuthenticationLinkModel::where('token', $token)->with('system')->with('user')->first();
+
+        if (!$this->exists($tokenModel)) throw new TokenNotFoundException($token);
+        if ($this->correctSystemCode($tokenModel)) throw new TokenBadSystemCodeException($token);
+        if ($tokenModel->isExpired()) throw new TokenExpiredException($token);
+
+        Auth::loginUsingId($tokenModel->user_id);
+
+        $tokenModel->delete();
+
+        return Auth::check();
+    }
+
+    private function exists($token): bool
+    {
+        return $token ? true : false;
+    }
+
+    private function correctSystemCode(AuthenticationLinkModel $token): bool
+    {
+        return $token->system->code !== $this->systemCode;
+    }
+
+    public function getSuccessRedirect(): RedirectResponse
+    {
+        return redirect($this->successRedirectLink);
+    }
+
+    public function getFailedRedirect(): RedirectResponse
+    {
+        return redirect($this->failedRedirectLink);
+    }
+
+    public function canMigrate(): bool
+    {
+        return $this->migrations;
+    }
+
+    public function getConnectionName(): string
+    {
+        return $this->connectionName;
     }
 }

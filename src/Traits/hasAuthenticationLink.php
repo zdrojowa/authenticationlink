@@ -21,9 +21,11 @@ trait hasAuthenticationLink
 
     /**
      * @param int $systemId
+     *
+     * @return string|null
      */
-    public function createAuthenticationLink(int $systemId)
+    public function createAuthenticationLink(int $systemId): ?string
     {
-        AuthenticationLinkFacade::create($this->id, $systemId);
+        return AuthenticationLinkFacade::create($this->id, $systemId);
     }
 }

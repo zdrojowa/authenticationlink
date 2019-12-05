@@ -2,14 +2,17 @@
 
 return [
     'token' => [
-        'lifetime' => 1000 * 60 // Default token lifetime
+        'lifetime' => 60 // Default token lifetime in seconds
     ],
 
-    'database_connection' => 'default',
+    'database_connection' => 'mysql',
 
-    'user_model' => 'App\User',
-    'system_model' => 'App\System',
-
+    'user_model' => 'Zdrojowa\AuthenticationLink\Models\User',
+    'system_model' => 'Zdrojowa\AuthenticationLink\Models\System',
+    'system_code' => env('AUTHENTICATION_LINK_SYSTEM_CODE'),
     'migrations' => false,
+    'routes' => true,
+    'failed_redirect_link' => '/',
+    'success_redirect_link' => '/dashboard'
 
 ];

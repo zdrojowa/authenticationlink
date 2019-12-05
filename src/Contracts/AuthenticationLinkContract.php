@@ -3,6 +3,7 @@
 namespace Zdrojowa\AuthenticationLink\Contracts;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\RedirectResponse;
 
 /**
  * Interface AuthenticationLinkContract
@@ -17,7 +18,7 @@ interface AuthenticationLinkContract
      *
      * @return string
      */
-    public function create(int $user, int $systemId, int $lifeTime = (1000 * 60)): string;
+    public function create(int $user, int $systemId, int $lifeTime = null): ?string;
 
     /**
      * @param int $linkId
@@ -37,8 +38,34 @@ interface AuthenticationLinkContract
     public function getUserModel(): ?Model;
 
     /**
+     * @return bool
+     */
+    public function canMigrate(): bool;
+
+    /**
      * @return Model|null
      */
     public function getSystemModel(): ?Model;
 
+    /**
+     * @param string $token
+     *
+     * @return bool
+     */
+    public function login(string $token): bool;
+
+    /**
+     * @return RedirectResponse
+     */
+    public function getSuccessRedirect(): RedirectResponse;
+
+    /**
+     * @return RedirectResponse
+     */
+    public function getFailedRedirect(): RedirectResponse;
+
+    /**
+     * @return string
+     */
+    public function getConnectionName(): string;
 }
