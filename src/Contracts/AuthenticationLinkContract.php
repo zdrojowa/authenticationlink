@@ -4,6 +4,7 @@ namespace Zdrojowa\AuthenticationLink\Contracts;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
+use Zdrojowa\AuthenticationLink\Models\System;
 
 /**
  * Interface AuthenticationLinkContract
@@ -68,4 +69,9 @@ interface AuthenticationLinkContract
      * @return string
      */
     public function getConnectionName(): string;
+
+    /**
+     * @return System|null
+     */
+    public function currentSystem(): ?System;
 }

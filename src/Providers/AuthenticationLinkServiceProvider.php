@@ -48,6 +48,7 @@ class AuthenticationLinkServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../Config/authentication-link.php', 'authentication-link');
         $this->mergeConfigFrom(__DIR__ . '/../Config/metable.php', 'metable');
+        $this->mergeConfigFrom(__DIR__ . '/../Config/system.php', 'system');
 
         if (AuthenticationLinkFacade::canMigrate()) $this->loadMigrationsFrom(__DIR__ . '/../Migrations');
 

@@ -4,6 +4,7 @@ namespace Zdrojowa\AuthenticationLink;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Zdrojowa\AuthenticationLink\Contracts\AuthenticationLinkContract;
 use Zdrojowa\AuthenticationLink\Exceptions\TokenBadSystemCodeException;
 use Zdrojowa\AuthenticationLink\Exceptions\TokenExpiredException;
@@ -13,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
+use Zdrojowa\AuthenticationLink\Models\System;
 
 /**
  * Class AuthenticationLink
@@ -32,10 +34,15 @@ class AuthenticationLink implements AuthenticationLinkContract
     private ?Model $systemModel;
 
     private string $systemCode;
+
     private bool $migrations;
+
     private int $lifetime;
+
     private string $failedRedirectLink;
+
     private string $successRedirectLink;
+
     private string $connectionName;
 
     /**
@@ -49,6 +56,7 @@ class AuthenticationLink implements AuthenticationLinkContract
         $this->migrations = Config::get('authentication-link.migrations');
         $this->lifetime = Config::get('authentication-link.token.lifetime');
         $this->connectionName = Config::get('authentication-link.database_connection');
+
         try {
             $this->userModel = app()->make(Config::get('authentication-link.user_model'));
         } catch (BindingResolutionException $e) {
@@ -148,7 +156,7 @@ class AuthenticationLink implements AuthenticationLinkContract
 
     private function correctSystemCode(AuthenticationLinkModel $token): bool
     {
-        return $token->system->code !== $this->systemCode;
+        return Hash::check($this->systemCode, $token->system->code);
     }
 
     public function getSuccessRedirect(): RedirectResponse
@@ -169,5 +177,17 @@ class AuthenticationLink implements AuthenticationLinkContract
     public function getConnectionName(): string
     {
         return $this->connectionName;
+    }
+
+    public function getSystemCode() {
+        return $this->systemCode;
+    }
+
+    public function currentSystem(): ?System {
+        foreach ($this->systemModel->all() as $system) {
+            if(Hash::check($this->systemCode, $system->code)) return $system;
+        }
+
+        return null;
     }
 }

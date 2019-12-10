@@ -2,8 +2,11 @@
 
 namespace Zdrojowa\AuthenticationLink\Support;
 
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Hash;
 use Zdrojowa\AuthenticationLink\Models\AuthenticationLink;
 use Illuminate\Support\Str;
+use Zdrojowa\AuthenticationLink\Models\System;
 
 /**
  * Class AuthenticationLinkHelper
