@@ -9,7 +9,7 @@ return [
 
     'user_model' => 'Zdrojowa\AuthenticationLink\Models\User',
     'system_model' => 'Zdrojowa\AuthenticationLink\Models\System',
-    'system_code' => env('AUTHENTICATION_LINK_SYSTEM_CODE'),
+    'system_code' => env('AUTHENTICATION_LINK_SYSTEM_CODE', ''),
     'migrations' => true,
     'routes' => true,
     'failed_redirect_link' => '/',

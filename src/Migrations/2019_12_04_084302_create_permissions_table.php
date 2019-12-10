@@ -18,7 +18,7 @@ class CreatePermissionsTable extends Migration
             $table->string('anchor');
             $table->string('name');
             $table->unsignedBigInteger('parent_id')->nullable();
-            $table->unsignedBigInteger('system_id');
+            $table->unsignedBigInteger('system_id')->nullable();
             $table->boolean('synchronized');
             $table->timestamps();
         });

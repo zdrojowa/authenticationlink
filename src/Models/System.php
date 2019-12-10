@@ -13,12 +13,18 @@ class System extends Model
     protected $fillable = [
         'name',
         'code',
-        'login_url'
+        'login_url',
+        'synchronization_url'
     ];
 
     protected $hidden = [
         'code'
     ];
+
+    public function permissions() {
+        return $this->hasMany(Permission::class);
+    }
+
 
     public function setCodeAttribute($value) {
         $this->attributes['code'] = Hash::make($value);

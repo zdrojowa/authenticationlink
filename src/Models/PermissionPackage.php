@@ -15,10 +15,10 @@ class PermissionPackage extends Model
     ];
 
     public function permissions() {
-        return $this->belongsToMany('App\Permission', 'perm_package', 'permission_package_id', 'permission_id');
+        return $this->belongsToMany(Permission::class, 'perm_package', 'permission_package_id', 'permission_id');
     }
 
     public function users() {
-        $this->belongsToMany('App\User', 'users_permissions_packages', 'permission_package_id', 'user_id');
+        $this->belongsToMany(User::class, 'users_permissions_packages', 'permission_package_id', 'user_id');
     }
 }

@@ -17,7 +17,8 @@ class CreateSystemsTable extends Migration
             $table->bigIncrements('id')->unsigned();
             $table->string('name');
             $table->string('code')->unique();
-            $table->string('login_url');
+            $table->text('login_url');
+            $table->text('synchronization_url');
             $table->timestamps();
         });
     }

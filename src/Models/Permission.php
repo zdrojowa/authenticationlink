@@ -15,11 +15,11 @@ class Permission extends Model
     ];
 
     public function system() {
-        $this->belongsTo('App\System', 'system_id', 'id');
+        $this->belongsTo(System::class, 'system_id', 'id');
     }
 
     public function packages() {
-        $this->belongsToMany('App\PermissionPackage', 'perm_package', 'permission_id', 'permission_package_id');
+        $this->belongsToMany(PermissionPackage::class, 'perm_package', 'permission_id', 'permission_package_id');
     }
 
 }

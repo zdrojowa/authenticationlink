@@ -2,7 +2,7 @@
 
 namespace Zdrojowa\AuthenticationLink\Models;
 
-use League\Flysystem\Config;
+use Zdrojowa\AuthenticationLink\Facades\AuthenticationLink as AuthenticationLinkFacade;
 use Zdrojowa\AuthenticationLink\Traits\hasAuthenticationLink;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'admin'
     ];
 
     /**
@@ -43,14 +44,29 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+
     public function packages()
     {
-        return $this->belongsToMany('App\User', 'users_permissions_packages', 'user_id', 'permission_package_id');
+        return $this->belongsToMany(PermissionPackage::class, 'users_permissions_packages', 'user_id', 'permission_package_id');
     }
 
     public function data()
     {
         return $this->hasOne('App\UserData');
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        if ($this->isAdmin()) return true;
+
+        return $this->whereHas('packages.permissions', function($query) {
+            $query->where('anchor', 'xd');
+            $query->where('system_id', AuthenticationLinkFacade::currentSystem());
+        })->exists();
+    }
+
+    public function isAdmin(): bool {
+        return $this->admin;
     }
 
 }
