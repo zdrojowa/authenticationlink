@@ -18,6 +18,7 @@ class CreateSystemsTable extends Migration
             $table->string('name');
             $table->string('code')->unique();
             $table->text('login_url');
+            $table->text('photo');
             $table->text('synchronization_url');
             $table->timestamps();
         });

@@ -14,7 +14,8 @@ class System extends Model
         'name',
         'code',
         'login_url',
-        'synchronization_url'
+        'synchronization_url',
+        'photo'
     ];
 
     protected $hidden = [

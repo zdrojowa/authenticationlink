@@ -55,14 +55,25 @@ class User extends Authenticatable
         return $this->hasOne('App\UserData');
     }
 
+    public function getPermissionsAttribute()
+    {
+        if (!$this->relationLoaded('packages') || !$this->packages->first()->relationLoaded('permissions')) {
+            $this->load('packages.permissions');
+        }
+
+        return collect($this->packages->pluck('permissions'))->collapse()->unique();
+    }
+
     public function hasPermission(string $permission): bool
     {
         if ($this->isAdmin()) return true;
 
-        return $this->whereHas('packages.permissions', function($query) {
-            $query->where('anchor', 'xd');
-            $query->where('system_id', AuthenticationLinkFacade::currentSystem());
-        })->exists();
+        return Permission
+            ::join('perm_package', 'permissions.id', '=', 'perm_package.permission_id')
+            ->join('permission_packages', 'perm_package.permission_package_id', '=', 'permission_packages.id')
+            ->join('users_permissions_packages', 'permission_packages.id', '=', 'users_permissions_packages.permission_package_id')
+            ->join('users', 'users_permissions_packages.user_id', '=', 'users.id')
+            ->where('users.id', $this->id)->where('permissions.anchor', $permission)->where('system_id', AuthenticationLinkFacade::currentSystem())->count();
     }
 
     public function isAdmin(): bool {

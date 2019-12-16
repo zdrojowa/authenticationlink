@@ -17,7 +17,6 @@ class CreatePermPackageTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('permission_id');
             $table->unsignedBigInteger('permission_package_id');
-            $table->timestamps();
         });
     }
 
