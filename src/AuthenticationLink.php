@@ -139,7 +139,7 @@ class AuthenticationLink implements AuthenticationLinkContract
         $tokenModel = AuthenticationLinkModel::where('token', $token)->with('system')->with('user')->first();
 
         if (!$this->exists($tokenModel)) throw new TokenNotFoundException($token);
-        if ($this->correctSystemCode($tokenModel)) throw new TokenBadSystemCodeException($token);
+        if (!$this->correctSystemCode($tokenModel)) throw new TokenBadSystemCodeException($token);
         if ($tokenModel->isExpired()) throw new TokenExpiredException($token);
 
         Auth::loginUsingId($tokenModel->user_id);
