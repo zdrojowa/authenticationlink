@@ -68,12 +68,13 @@ class User extends Authenticatable
     {
         if ($this->isAdmin()) return true;
 
+        $currentSystem = AuthenticationLinkFacade::currentSystem();
         return Permission
             ::join('perm_package', 'permissions.id', '=', 'perm_package.permission_id')
             ->join('permission_packages', 'perm_package.permission_package_id', '=', 'permission_packages.id')
             ->join('users_permissions_packages', 'permission_packages.id', '=', 'users_permissions_packages.permission_package_id')
             ->join('users', 'users_permissions_packages.user_id', '=', 'users.id')
-            ->where('users.id', $this->id)->where('permissions.anchor', $permission)->where('system_id', AuthenticationLinkFacade::currentSystem())->count();
+            ->where('users.id', $this->id)->where('permissions.anchor', $permission)->where('system_id', $currentSystem !== null ? $currentSystem->id : null)->count();
     }
 
     public function isAdmin(): bool {
