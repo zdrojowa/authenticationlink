@@ -31,8 +31,6 @@ class AuthenticationLinkController extends Controller
         } catch (TokenNotFoundException | TokenBadSystemCodeException | TokenExpiredException $exception) {
             report($exception);
 
-            dd($exception);
-
             return $authenticationLink->getFailedRedirect();
         }
 
