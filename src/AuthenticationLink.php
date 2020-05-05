@@ -50,12 +50,12 @@ class AuthenticationLink implements AuthenticationLinkContract
      */
     public function __construct()
     {
-        $this->systemCode = Config::get('authentication-link.system_code');
+        $this->systemCode          = Config::get('authentication-link.system_code');
         $this->successRedirectLink = Config::get('authentication-link.success_redirect_link');
-        $this->failedRedirectLink = Config::get('authentication-link.failed_redirect_link');
-        $this->migrations = Config::get('authentication-link.migrations');
-        $this->lifetime = Config::get('authentication-link.token.lifetime');
-        $this->connectionName = Config::get('authentication-link.database_connection');
+        $this->failedRedirectLink  = Config::get('authentication-link.failed_redirect_link');
+        $this->migrations          = Config::get('authentication-link.migrations');
+        $this->lifetime            = Config::get('authentication-link.token.lifetime');
+        $this->connectionName      = Config::get('authentication-link.database_connection');
 
         try {
             $this->userModel = app()->make(Config::get('authentication-link.user_model'));
@@ -99,7 +99,7 @@ class AuthenticationLink implements AuthenticationLinkContract
      */
     public function delete(int $linkId): bool
     {
-        // TODO: Implement delete() method.
+        return AuthenticationLinkModel::destroy($linkId);
     }
 
     /**
@@ -107,7 +107,7 @@ class AuthenticationLink implements AuthenticationLinkContract
      */
     public function deleteAll(): bool
     {
-        // TODO: Implement deleteAll() method.
+        return AuthenticationLinkModel::truncate();
     }
 
     /**
